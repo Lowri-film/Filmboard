@@ -357,11 +357,111 @@ async function saveThemeToDb(){
 }
 
 async function createBoard(){
-  let title=document.getElementById('newTitle').value||'Untitled Movie Board';
-  let desc=document.getElementById('newDesc').value||'A new collection of films.';
-  let bgVal=document.getElementById('bg').value;
-  let presetName=Object.entries(presets).find(([_,v])=>v.bg===bgVal)?.[0]||"Custom";
-  let theme={name:presetName,bg:bgVal,card:document.getElementById('card').value,ink:document.getElementById('ink').value,accent:document.getElementById('accent').value,line:document.getElementById('line').value,font:document.getElementById('font').value,radius:document.getElementById('radius').value,layout:document.getElementById('layout').value};
+  try{
+    const title =
+      document.getElementById('newTitle').value.trim() ||
+      'Untitled Movie Board';
+
+    const desc =
+      document.getElementById('newDesc').value.trim() ||
+      'A new collection of films.';
+
+    const bgVal = document.getElementById('bg').value;
+
+    const presetName =
+      Object.entries(presets).find(([_,v]) => v.bg === bgVal)?.[0] ||
+      "Custom";
+
+    const theme = {
+      name:presetName,
+      bg:bgVal,
+      card:document.getElementById('card').value,
+      ink:document.getElementById('ink').value,
+      accent:document.getElementById('accent').value,
+      line:document.getElementById('line').value,
+      font:document.getElementById('font').value,
+      radius:document.getElementById('radius').value,
+      layout:document.getElementById('layout').value
+    };
+
+    /* Make sure Supabase and the anonymous user are ready */
+    if(!sb || !currentUser){
+      const connected = await initSupabase();
+
+      if(!connected){
+        alert(
+          "Filmboard couldn't connect to Supabase.\n\n" +
+          "Please make sure Anonymous Sign-Ins are enabled in Supabase."
+        );
+        return;
+      }
+    }
+
+    /* Create the board */
+    const {data: row, error} = await sb
+      .from("boards")
+      .insert({
+        title:title,
+        description:desc,
+        theme:theme,
+        owner_id:currentUser.id
+      })
+      .select()
+      .single();
+
+    if(error){
+      console.error("Board creation error:", error);
+
+      alert(
+        "Filmboard couldn't create your board.\n\n" +
+        error.message
+      );
+
+      return;
+    }
+
+    /* Add you as the first member */
+    const {error: memberError} = await sb
+      .from("board_members")
+      .insert({
+        board_id:row.id,
+        user_id:currentUser.id,
+        display_name:currentDisplayName || "You"
+      });
+
+    if(memberError){
+      console.error("Member creation error:", memberError);
+
+      alert(
+        "Your board was created, but Filmboard couldn't add you as a member.\n\n" +
+        memberError.message
+      );
+
+      return;
+    }
+
+    /* Put the new board into the app */
+    activeBoard = mapDbBoard(row, []);
+    activeBoard.members = 1;
+
+    boards.unshift(activeBoard);
+
+    applyTheme(activeBoard);
+    closeModal();
+    show('boardView');
+
+    await loadBoardState(activeBoard);
+    renderBoard();
+
+  }catch(error){
+    console.error("Unexpected create board error:", error);
+
+    alert(
+      "Something went wrong while creating your board.\n\n" +
+      error.message
+    );
+  }
+}
 
   if(!sb){
     let b={id:Date.now(),title,desc,theme,movies:[],movieRecords:{},members:1};
