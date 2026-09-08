@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Filmboard — Your films, your people</title>
+<style>
+:root{--bg:#fff8f3;--card:#fff;--ink:#302724;--muted:#7d706a;--accent:#b89a72;--accent2:#eee7dd;--line:#eaded6}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink)}
+button,input{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}
+nav{position:sticky;top:0;z-index:10;background:#fffdf9e8;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:15px 6%}
+.logo{font-family:Georgia,serif;font-size:1.55rem;font-weight:800}.logo span{color:var(--accent)}
+.navlinks{display:flex;gap:10px;align-items:center}.navlinks button,.ghost{background:transparent;padding:10px 14px;border-radius:999px;color:var(--ink)}.primary{background:var(--ink);color:white;padding:11px 18px;border-radius:999px;box-shadow:0 5px 15px #0002}
+main{max-width:1250px;margin:auto;padding:0 6% 70px}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:35px;align-items:center;padding:75px 0 55px}.eyebrow{display:inline-block;background:var(--accent2);padding:7px 12px;border-radius:999px;font-size:.85rem;font-weight:700}.hero h1{font-family:Georgia,serif;font-size:clamp(3rem,7vw,6rem);line-height:.95;margin:18px 0}.hero p{font-size:1.1rem;color:var(--muted);max-width:560px;line-height:1.6}.heroActions{display:flex;gap:12px;margin-top:24px}.heroPoster{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;transform:rotate(2deg)}.heroPoster img{width:100%;height:260px;object-fit:cover;border-radius:22px;box-shadow:0 14px 30px #6543}.heroPoster img:nth-child(2){transform:translateY(35px)}.sectionHead{display:flex;justify-content:space-between;align-items:end;gap:20px;margin:35px 0 18px}.sectionHead h2{font-family:Georgia,serif;font-size:2rem;margin:0}.sectionHead p{color:var(--muted);margin:6px 0 0}
+.boardGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.board{border:1px solid var(--line);border-radius:26px;overflow:hidden;background:var(--card);transition:.2s}.board:hover{transform:translateY(-4px);box-shadow:0 16px 30px #0001}.boardCover{height:175px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:10px}.boardCover img{width:100%;height:100%;object-fit:cover;border-radius:14px}.boardInfo{padding:16px}.boardInfo h3{margin:0;font-family:Georgia,serif;font-size:1.25rem}.boardInfo small{color:var(--muted)}
+.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.filters{display:flex;gap:8px;flex-wrap:wrap}.chip{padding:9px 13px;border:1px solid var(--line);background:#fff;border-radius:999px}.chip.active{background:var(--ink);color:#fff}.posterGrid{columns:5 180px;column-gap:15px;margin-top:22px}.movie{break-inside:avoid;margin-bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative}.movie img{width:100%;display:block;min-height:230px;object-fit:cover}.movieBody{padding:12px}.movie h3{font-size:1rem;margin:0 0 5px}.meta{font-size:.82rem;color:var(--muted)}.rating{font-size:.86rem;margin-top:8px}.heart{position:absolute;right:10px;top:10px;width:37px;height:37px;border-radius:50%;background:#fffc;border:1px solid #fff;font-size:1.1rem}.heart.on{background:var(--accent);color:#fff}.recommend{margin-top:45px;padding:28px;border-radius:28px;background:var(--accent2)}.recGrid{display:flex;gap:15px;overflow:auto;padding-top:15px}.recCard{min-width:145px;background:#fff;border-radius:18px;overflow:hidden}.recCard img{width:100%;height:190px;object-fit:cover}.recCard b{display:block;padding:10px;font-size:.9rem}
+.modal{position:fixed;inset:0;background:#21181288;z-index:20;display:flex;align-items:center;justify-content:center;padding:20px}.modalBox{width:min(800px,100%);max-height:90vh;overflow:auto;background:var(--bg);border-radius:30px;padding:25px;position:relative}.close{position:absolute;right:18px;top:15px;border-radius:50%;width:38px;height:38px;background:#fff;font-size:1.4rem}.detail{display:grid;grid-template-columns:240px 1fr;gap:25px}.detail img{width:100%;border-radius:18px}.stars button{background:transparent;font-size:2rem;padding:2px;color:#c9b9b0}.stars button.selected{color:#f4b83f}.people{margin-top:18px}.person{display:flex;justify-content:space-between;background:#fff;padding:11px 14px;border-radius:12px;margin-top:8px}.addForm{display:grid;gap:12px;margin-top:15px}.addForm input{padding:13px;border-radius:12px;border:1px solid var(--line)}.themePicker{display:flex;gap:8px;flex-wrap:wrap}.themeDot{width:38px;height:38px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}.themeDot.active{box-shadow:0 0 0 3px var(--ink)}
+footer{text-align:center;color:var(--muted);padding:35px}
+@media(max-width:750px){.hero,.detail{grid-template-columns:1fr}.hero{padding-top:45px}.heroPoster{max-width:430px;margin:auto}.heroPoster img{height:200px}.boardGrid{grid-template-columns:1fr}.posterGrid{columns:2 145px}.navlinks button:not(.primary){display:none}.detail img{max-width:210px}.sectionHead{align-items:start}}
+
+.themeEditor{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:15px}
+.themeEditor label{font-size:.82rem;color:var(--muted);display:grid;gap:6px}
+.themeEditor input,.themeEditor select{width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.themePreview{padding:18px;border-radius:18px;border:1px solid var(--line);margin-top:15px}
+
+.presetGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 18px}
+.preset{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:10px;text-align:left;min-height:78px;transition:.15s}
+.preset:hover{transform:translateY(-2px);box-shadow:0 8px 18px #0001}
+.swatches{display:flex;gap:4px;margin-bottom:7px}.swatches i{display:block;width:18px;height:18px;border-radius:50%;border:1px solid #0002}
+.preset b{font-size:.82rem}.preset small{display:block;color:var(--muted);font-size:.7rem;margin-top:2px}
+@media(max-width:750px){.presetGrid{grid-template-columns:repeat(2,1fr)}}
+
+.liveSearchStatus{padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--muted);font-size:.84rem;margin-top:8px}
+.apiNote{font-size:.78rem;color:var(--muted);line-height:1.45;margin-top:10px}
+.tmdbResult{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;background:var(--card);padding:8px;border:1px solid var(--line);border-radius:14px;margin-top:8px}
+.tmdbResult img{width:52px;height:76px;object-fit:cover;border-radius:8px}
+.tmdbResult b{font-size:.88rem}.tmdbResult small{color:var(--muted);display:block;margin-top:3px}
+</style>
+</head>
+<body>
+<nav><button class="logo" onclick="show('home')">film<span>board</span> ✦</button><div class="navlinks"><button onclick="show('home')">Home</button><button onclick="show('boards')">My boards</button><button class="ghost" onclick="setTmdbToken()">TMDB</button><button class="primary" onclick="openCreate()">＋ Create board</button></div></nav>
+<main>
+<section id="home">
+<div class="hero"><div><span class="eyebrow">🎬 your movie collection, your way</span><h1>Your films.<br>Your people.<br>Your next favourite.</h1><p>Create beautiful movie boards, invite your friends, rate everything together and discover what to watch next.</p><div class="heroActions"><button class="primary" onclick="show('boards')">Explore my boards →</button><button class="ghost" onclick="openCreate()">Create your first board</button></div></div>
+<div class="heroPoster" id="heroPosters"></div></div>
+<div class="sectionHead"><div><h2>Made for every mood</h2><p>Every board can have its own little personality.</p></div></div>
+<div class="boardGrid" id="homeBoards"></div>
+</section>
+<section id="boards" class="hidden"><div class="sectionHead"><div><h2>My movie boards ✦</h2><p>Collect films for every mood, obsession and movie night.</p></div><button class="primary" onclick="openCreate()">＋ New board</button></div><div class="boardGrid" id="boardsGrid"></div></section>
+<section id="boardView" class="hidden"><div class="sectionHead"><div><span class="eyebrow" id="boardMood">filmboard</span><h2 id="boardTitle">Summer Movie Night</h2><p id="boardDesc">A collection for warm evenings and questionable snacks.</p></div><div><button class="ghost" onclick="shareBoard()">↗ Share</button><button class="ghost" onclick="openThemeEditor()">Edit aesthetic</button><button class="primary" onclick="openAdd()">＋ Add film</button></div></div>
+<div class="toolbar"><div class="filters"><button class="chip active" onclick="filterMovies('All',this)">All</button><button class="chip" onclick="filterMovies('Romance',this)">Romance</button><button class="chip" onclick="filterMovies('Comedy',this)">Comedy</button><button class="chip" onclick="filterMovies('Drama',this)">Drama</button><button class="chip" onclick="filterMovies('Fantasy',this)">Fantasy</button></div><span id="movieCount" class="meta"></span></div>
+<div class="posterGrid" id="movieGrid"></div>
+<div class="recommend"><span class="eyebrow">✨ just for this board</span><h2>We think you'll like these</h2><p>Recommendations based on the films this group loves most.</p><div class="recGrid" id="recommendations"></div></div></section>
+</main><footer>filmboard ✦ your films, collected beautifully</footer>
+
+<div class="modal hidden" id="modal"><div class="modalBox" id="modalContent"></div></div>
+<script>
+const imgs={
+'10 Things I Hate About You':'https://image.tmdb.org/t/p/w500/ujERk3aKABXU3NDXOAxEQYTHe9A.jpg',
+'La La Land':'https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg',
+'Spirited Away':'https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg',
+'Little Women':'https://image.tmdb.org/t/p/w500/yn5ihODtZ7ofn8pDYfxCmxh8AXI.jpg',
+'The Grand Budapest Hotel':'https://image.tmdb.org/t/p/w500/eWdyYQreja6JGCzqHWXpWHDrrPo.jpg',
+'Lady Bird':'https://image.tmdb.org/t/p/w500/iySFtKLrWvVzXzlFj7x1zalxi5G.jpg',
+'Fantastic Mr. Fox':'https://image.tmdb.org/t/p/w500/njbTizADSZg4PqeyJdDzZGooikv.jpg',
+'Booksmart':'https://image.tmdb.org/t/p/w500/mc3Jl9E5e8o3hV4AqD4Y0Bk0mYw.jpg',
+'Interstellar':'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+'The Princess Bride':'https://image.tmdb.org/t/p/w500/dvjqlp2sAhUeFjUOfQDgqwpphHj.jpg'};
+let boards=[
+{id:1,title:'Summer Movie Night',desc:'A collection of films for warm evenings and movie nights.',theme:{name:'Cherry Red',bg:'#f8e8e5',card:'#fff9f7',ink:'#341b1b',accent:'#c7353b',line:'#e3c0bd',font:'Inter',radius:'16px',layout:'grid'},emoji:'',movies:['10 Things I Hate About You','La La Land','Spirited Away','Little Women','The Grand Budapest Hotel'],members:4},
+{id:2,title:'Comfort Films',desc:'The cinematic equivalent of a hug.',theme:{name:'Coastal Blue',bg:'#e7f1f2',card:'#fbffff',ink:'#234047',accent:'#4d8e9a',line:'#c7dcdf',font:'Inter',radius:'22px',layout:'masonry'},emoji:'',movies:['Fantastic Mr. Fox','Spirited Away','Little Women','The Princess Bride'],members:3},
+{id:3,title:'Films That Changed Me',desc:'For when a film leaves you staring at the credits.',theme:{name:'Cinema Noir',bg:'#141414',card:'#202020',ink:'#f4efe7',accent:'#d6a85f',line:'#3b3936',font:'Georgia',radius:'10px',layout:'masonry'},emoji:'',movies:['Lady Bird','Interstellar','La La Land','The Grand Budapest Hotel'],members:6}
+];
+boards.forEach(b=>{if(!b.movieRecords)b.movieRecords={};});
+let activeBoard=boards[0], ratings={'10 Things I Hate About You':{'You':4.5,'Emma':5,'Jack':4},'La La Land':{'You':5,'Emma':4,'Sophie':5},'Spirited Away':{'You':5,'Jack':5,'Mia':4.5},'Little Women':{'You':4.5,'Emma':5},'The Grand Budapest Hotel':{'You':5,'Sophie':4.5}};
+let favs=new Set(['La La Land','Spirited Away']);
+const genreMap={'10 Things I Hate About You':'Romance · Comedy','La La Land':'Romance · Drama','Spirited Away':'Fantasy · Adventure','Little Women':'Drama · Romance','The Grand Budapest Hotel':'Comedy · Drama','Lady Bird':'Drama · Comedy','Fantastic Mr. Fox':'Comedy · Fantasy','Booksmart':'Comedy','Interstellar':'Drama · Sci-Fi','The Princess Bride':'Fantasy · Romance'};
+const yearMap={'10 Things I Hate About You':1999,'La La Land':2016,'Spirited Away':2001,'Little Women':2019,'The Grand Budapest Hotel':2014,'Lady Bird':2017,'Fantastic Mr. Fox':2009,'Booksmart':2019,'Interstellar':2014,'The Princess Bride':1987};
+function avg(name){let r=Object.values(ratings[name]||{});return r.length?(r.reduce((a,b)=>a+b,0)/r.length).toFixed(1):'—'}
+function show(id){['home','boards','boardView'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id));if(id==='boards')renderBoards();if(id==='boardView')renderBoard()}
+function cover(b){return b.movies.slice(0,4).map(m=>`<img src="${imgs[m]}" alt="${m}">`).join('')}
+function renderBoards(){let html=boards.map(b=>`<button class="board" onclick="selectBoard(${b.id})"><div class="boardCover">${cover(b)}</div><div class="boardInfo"><h3>${b.title}</h3><small>${b.movies.length} films · ${b.members} people · ${b.theme?.name||'Custom'}</small></div></button>`).join('');document.getElementById('boardsGrid').innerHTML=html;document.getElementById('homeBoards').innerHTML=html}
+function selectBoard(id){activeBoard=boards.find(b=>b.id===id);applyTheme(activeBoard);show('boardView')}
+function renderBoard(filter='All'){applyTheme(activeBoard);document.getElementById('boardMood').textContent=`${activeBoard.theme} theme`;document.getElementById('boardTitle').textContent=activeBoard.title;document.getElementById('boardDesc').textContent=activeBoard.desc;let movies=activeBoard.movies.filter(m=>filter==='All'||genreMap[m].includes(filter));document.getElementById('movieCount').textContent=`${movies.length} films · ${activeBoard.members} people`;document.getElementById('movieGrid').innerHTML=movies.map(m=>`<article class="movie"><button class="heart ${favs.has(m)?'on':''}" onclick="event.stopPropagation();toggleFav('${m}')">♥</button><img src="${activeBoard.movieRecords?.[m]?.poster||imgs[m]}" alt="${m}" onclick="openMovie('${m}')"><div class="movieBody" onclick="openMovie('${m}')"><h3>${m}</h3><div class="meta">${activeBoard.movieRecords?.[m]?.year||yearMap[m]||""} · ${activeBoard.movieRecords?.[m]?.genres||genreMap[m]||"Movie"}</div><div class="rating">⭐ ${avg(m)} · ${Object.keys(ratings[m]||{}).length} ratings</div></div></article>`).join('');let rec=['Lady Bird','Fantastic Mr. Fox','Booksmart','Interstellar','The Princess Bride'].filter(m=>!activeBoard.movies.includes(m));document.getElementById('recommendations').innerHTML=rec.map(m=>`<div class="recCard" onclick="openMovie('${m}')"><img src="${imgs[m]}" alt="${m}"><b>${m}</b></div>`).join('')}
+function filterMovies(f,el){document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderBoard(f)}
+function toggleFav(m){favs.has(m)?favs.delete(m):favs.add(m);renderBoard()}
+function openMovie(m){let my=(ratings[m]||{})['You']||0;let stars=[1,2,3,4,5].map(s=>`<button class="${my>=s?'selected':''}" onclick="rate('${m}',${s})">★</button>`).join('');let people=Object.entries(ratings[m]||{}).map(([p,r])=>`<div class="person"><span>${p}${p==='You'?' ✦':''}</span><b>⭐ ${r}</b></div>`).join('');document.getElementById('modalContent').innerHTML=`<button class="close" onclick="closeModal()">×</button><div class="detail"><img src="${imgs[m]}" alt="${m}"><div><span class="eyebrow">${yearMap[m]} · ${genreMap[m]}</span><h2>${m}</h2><p class="meta">Rate it, favourite it, and see what everyone else thought.</p><h3>Your rating</h3><div class="stars">${stars}</div><button class="chip" onclick="toggleFav('${m}');openMovie('${m}')">${favs.has(m)?'♥ Favourited':'♡ Add to favourites'}</button><div class="people"><h3>Everyone's ratings · ⭐ ${avg(m)}</h3>${people||'<p>No ratings yet.</p>'}</div></div></div>`;document.getElementById('modal').classList.remove('hidden')}
+function rate(m,n){ratings[m]=ratings[m]||{};ratings[m]['You']=n;openMovie(m);renderBoard()}
+function closeModal(){document.getElementById('modal').classList.add('hidden')}
+
+const presets={
+"Quiet Editorial":{bg:"#f5f1eb",card:"#fffdf9",ink:"#2e2b28",accent:"#8b7762",line:"#ddd4c9",font:"Georgia",radius:"14px",layout:"grid"},
+"Cinema Noir":{bg:"#141414",card:"#202020",ink:"#f4efe7",accent:"#d6a85f",line:"#3b3936",font:"Georgia",radius:"10px",layout:"masonry"},
+"Mocha & Cream":{bg:"#efe5db",card:"#fffaf5",ink:"#4a3027",accent:"#a47864",line:"#d8c5b6",font:"Inter",radius:"20px",layout:"masonry"},
+"Burgundy Club":{bg:"#f3ebe8",card:"#fffdfb",ink:"#351d24",accent:"#7e263b",line:"#d9c4c7",font:"Georgia",radius:"12px",layout:"grid"},
+"Butter Yellow":{bg:"#fcf6d8",card:"#fffef4",ink:"#3c3825",accent:"#c4a632",line:"#e4dcae",font:"Inter",radius:"22px",layout:"masonry"},
+"Olive & Paper":{bg:"#e9eadf",card:"#fbfaf4",ink:"#303629",accent:"#69744c",line:"#cdd1c2",font:"Trebuchet MS",radius:"18px",layout:"masonry"},
+"Digital Lavender":{bg:"#eeeafb",card:"#ffffff",ink:"#312d3d",accent:"#8b73c5",line:"#d8d0ed",font:"Inter",radius:"24px",layout:"grid"},
+"Electric Blue":{bg:"#eaf0ff",card:"#ffffff",ink:"#14213d",accent:"#2554e8",line:"#c9d5f6",font:"Inter",radius:"10px",layout:"grid"},
+"Juicy Peach":{bg:"#fff0e7",card:"#fffaf6",ink:"#472b25",accent:"#ee8e62",line:"#efd0c0",font:"Trebuchet MS",radius:"24px",layout:"masonry"},
+"Plum After Dark":{bg:"#211b27",card:"#2d2535",ink:"#f2eaf6",accent:"#a969bd",line:"#49394f",font:"Georgia",radius:"18px",layout:"masonry"},
+"Retro VHS":{bg:"#f3e6ce",card:"#fff8e8",ink:"#2b2622",accent:"#d54c3f",line:"#d7c1a2",font:"Courier New",radius:"8px",layout:"grid"},
+"90s Magazine":{bg:"#f8f7f2",card:"#ffffff",ink:"#171717",accent:"#ef4f92",line:"#1f1f1f",font:"Trebuchet MS",radius:"2px",layout:"grid"},
+"Coastal Blue":{bg:"#e7f1f2",card:"#fbffff",ink:"#234047",accent:"#4d8e9a",line:"#c7dcdf",font:"Inter",radius:"22px",layout:"masonry"},
+"Art House Green":{bg:"#dfe7df",card:"#f7f4ea",ink:"#283329",accent:"#315b46",line:"#c5cec3",font:"Georgia",radius:"6px",layout:"masonry"},
+"Cherry Red":{bg:"#f8e8e5",card:"#fff9f7",ink:"#341b1b",accent:"#c7353b",line:"#e3c0bd",font:"Inter",radius:"16px",layout:"grid"}
+};
+function presetButtons(mode="create"){
+return Object.entries(presets).map(([name,t])=>`<button type="button" class="preset" onclick="${mode==="create"?"pickPreset":"pickEditPreset"}('${name}')"><span class="swatches"><i style="background:${t.bg}"></i><i style="background:${t.card}"></i><i style="background:${t.accent}"></i><i style="background:${t.ink}"></i></span><b>${name}</b><small>${t.font} · ${t.layout}</small></button>`).join("");
+}
+function pickPreset(name){
+const t=presets[name]; ["bg","card","ink","accent","line"].forEach(id=>document.getElementById(id).value=t[id]);
+document.getElementById("font").value=t.font;document.getElementById("radius").value=t.radius;document.getElementById("layout").value=t.layout;previewTheme();
+}
+function pickEditPreset(name){
+const t=presets[name]; ["ebg","ecard","eink","eaccent","eline"].forEach((id,i)=>document.getElementById(id).value=[t.bg,t.card,t.ink,t.accent,t.line][i]);
+document.getElementById("efont").value=t.font;document.getElementById("eradius").value=t.radius;document.getElementById("elayout").value=t.layout;
+}
+function openCreate(){
+document.getElementById('modalContent').innerHTML=`<button class="close" onclick="closeModal()">×</button>
+<h2>Create a new board</h2><p class="meta">Give your board its own visual identity.</p>
+<div class="addForm">
+<input id="newTitle" placeholder="Board name, e.g. Rainy Day Films">
+<input id="newDesc" placeholder="A little description">
+<h3>Choose a preset</h3><div class="presetGrid">${presetButtons("create")}</div>
+<h3>Or customise it yourself</h3><div class="themeEditor">
+<label>Background <input id="bg" type="color" value="#f7f4ef"></label>
+<label>Card colour <input id="card" type="color" value="#ffffff"></label>
+<label>Text colour <input id="ink" type="color" value="#302d29"></label>
+<label>Accent colour <input id="accent" type="color" value="#9a8061"></label>
+<label>Border colour <input id="line" type="color" value="#ddd6cc"></label>
+<label>Font
+<select id="font"><option value="Inter">Clean</option><option value="Georgia">Editorial</option><option value="Trebuchet MS">Soft</option><option value="Courier New">Retro</option></select></label>
+<label>Card shape
+<select id="radius"><option value="12px">Sharp</option><option value="20px" selected>Rounded</option><option value="30px">Very rounded</option></select></label>
+<label>Layout
+<select id="layout"><option value="masonry" selected>Masonry</option><option value="grid">Even grid</option></select></label>
+</div>
+<div class="themePreview" id="preview"><b>Filmboard preview</b><p class="meta">Your board can look completely different from every other board.</p></div>
+<button class="primary" onclick="createBoard()">Create my board →</button>
+</div>`;
+document.getElementById('modal').classList.remove('hidden');
+['bg','card','ink','accent','line','font','radius','layout'].forEach(id=>document.getElementById(id).addEventListener('input',previewTheme));
+previewTheme();
+}
+function previewTheme(){
+let root=document.documentElement;
+root.style.setProperty('--bg',document.getElementById('bg').value);
+root.style.setProperty('--card',document.getElementById('card').value);
+root.style.setProperty('--ink',document.getElementById('ink').value);
+root.style.setProperty('--accent',document.getElementById('accent').value);
+root.style.setProperty('--line',document.getElementById('line').value);
+document.getElementById('preview').style.fontFamily=document.getElementById('font').value;
+document.getElementById('preview').style.borderRadius=document.getElementById('radius').value;
+}
+function createBoard(){
+let title=document.getElementById('newTitle').value||'Untitled Movie Board';
+let desc=document.getElementById('newDesc').value||'A new collection of films.';
+let bgVal=document.getElementById('bg').value;
+let presetName=Object.entries(presets).find(([_,v])=>v.bg===bgVal)?.[0]||"Custom";
+let theme={name:presetName,bg:bgVal,card:document.getElementById('card').value,ink:document.getElementById('ink').value,accent:document.getElementById('accent').value,line:document.getElementById('line').value,font:document.getElementById('font').value,radius:document.getElementById('radius').value,layout:document.getElementById('layout').value};
+let b={id:Date.now(),title,desc,theme,movies:[],movieRecords:{},members:1};
+boards.unshift(b);activeBoard=b;applyTheme(b);closeModal();show('boardView')
+}
+function applyTheme(b){
+let t=b.theme||{};
+let root=document.documentElement;
+root.style.setProperty('--bg',t.bg||'#fff8f3');root.style.setProperty('--card',t.card||'#fff');root.style.setProperty('--ink',t.ink||'#302724');root.style.setProperty('--accent',t.accent||'#b89a72');root.style.setProperty('--line',t.line||'#eaded6');
+document.body.style.fontFamily=t.font||'Inter';
+document.querySelectorAll('.board,.movie,.recCard,.modalBox').forEach(x=>x.style.borderRadius=t.radius||'20px');
+document.getElementById('movieGrid').style.columns=t.layout==='grid'?'repeat(5,1fr)':'5 180px';
+}
+function openThemeEditor(){
+let t=activeBoard.theme||{bg:'#fff8f3',card:'#fff',ink:'#302724',accent:'#b89a72',line:'#eaded6',font:'Inter',radius:'20px',layout:'masonry'};
+document.getElementById('modalContent').innerHTML=`<button class="close" onclick="closeModal()">×</button><h2>Edit board aesthetic</h2><p class="meta">Start with a preset, then fine-tune every detail.</p><div class="presetGrid">${presetButtons("edit")}</div><div class="themeEditor">
+<label>Background <input id="ebg" type="color" value="${t.bg}"></label><label>Card colour <input id="ecard" type="color" value="${t.card}"></label>
+<label>Text colour <input id="eink" type="color" value="${t.ink}"></label><label>Accent colour <input id="eaccent" type="color" value="${t.accent}"></label>
+<label>Border colour <input id="eline" type="color" value="${t.line}"></label><label>Font <select id="efont"><option ${t.font==='Inter'?'selected':''}>Inter</option><option ${t.font==='Georgia'?'selected':''}>Georgia</option><option ${t.font==='Trebuchet MS'?'selected':''}>Trebuchet MS</option><option ${t.font==='Courier New'?'selected':''}>Courier New</option></select></label>
+<label>Card shape <select id="eradius"><option value="12px">Sharp</option><option value="20px">Rounded</option><option value="30px">Very rounded</option></select></label>
+<label>Layout <select id="elayout"><option value="masonry">Masonry</option><option value="grid">Even grid</option></select></label></div>
+<button class="primary" style="margin-top:18px" onclick="saveTheme()">Save aesthetic</button>`;
+document.getElementById('modal').classList.remove('hidden');
+}
+function saveTheme(){
+activeBoard.theme={name:Object.entries(presets).find(([_,v])=>v.bg===ebg.value)?.[0]||"Custom",bg:ebg.value,card:ecard.value,ink:eink.value,accent:eaccent.value,line:eline.value,font:efont.value,radius:eradius.value,layout:elayout.value};
+applyTheme(activeBoard);closeModal();renderBoard();
+}
+function openAdd(){
+document.getElementById('modalContent').innerHTML=`<button class="close" onclick="closeModal()">×</button>
+<h2>Add a film</h2><p class="meta">Search the live TMDB catalogue instead of choosing from a small demo library.</p>
+<div class="addForm">
+<input id="searchMovie" placeholder="Search any film — title, translated title..." oninput="searchFilms()">
+<div class="liveSearchStatus" id="searchStatus">Enter a film title to search TMDB.</div>
+<div id="filmChoices"></div>
+</div>
+<p class="apiNote">This prototype uses your TMDB API Read Access Token. In the final hosted version, the token should be kept on the server. TMDB requires attribution for API/data use.</p>`;
+document.getElementById('modal').classList.remove('hidden');
+setTimeout(()=>document.getElementById('searchMovie').focus(),50);
+}
+async function searchFilms(){
+let q=(document.getElementById('searchMovie').value||'').trim();
+let status=document.getElementById('searchStatus'),box=document.getElementById('filmChoices');
+if(q.length<2){status.textContent='Enter at least 2 characters to search.';box.innerHTML='';return}
+let token=localStorage.getItem('filmboard_tmdb_token');
+if(!token){status.innerHTML='TMDB is not connected yet. <button class="chip" onclick="setTmdbToken()">Connect TMDB</button>';box.innerHTML='';return}
+status.textContent='Searching TMDB…';box.innerHTML='';
+try{
+let r=await fetch('https://api.themoviedb.org/3/search/movie?query='+encodeURIComponent(q)+'&include_adult=false&language=en-US&page=1',{headers:{Authorization:'Bearer '+token,accept:'application/json'}});
+if(!r.ok) throw new Error('TMDB request failed');
+let data=await r.json(),results=(data.results||[]).slice(0,12);
+status.textContent=results.length?`${results.length} results found`:'No films found';
+box.innerHTML=results.map(m=>{
+let title=m.title||m.original_title||'Untitled',year=m.release_date?m.release_date.slice(0,4):'Unknown year';
+let poster=m.poster_path?'https://image.tmdb.org/t/p/w185'+m.poster_path:'';
+return `<div class="tmdbResult">${poster?`<img src="${poster}" alt="">`:'<div></div>'}<div><b>${title}</b><small>${year} · TMDB #${m.id}</small></div><button class="chip" onclick='addTmdbFilm(${JSON.stringify(m).replace(/</g,"\\u003c")})'>＋ Add</button></div>`
+}).join('');
+}catch(e){status.textContent='Could not connect to TMDB. Check your token and try again.'}
+}
+function setTmdbToken(){
+let token=prompt('Paste your TMDB API Read Access Token here:');
+if(token&&token.trim()){localStorage.setItem('filmboard_tmdb_token',token.trim());alert('TMDB connected. Now search for a film.');}
+}
+function addTmdbFilm(m){
+let title=m.title||m.original_title||'Untitled';
+if(!activeBoard.movieRecords)activeBoard.movieRecords={};
+activeBoard.movieRecords[title]={tmdbId:m.id,title,year:m.release_date?Number(m.release_date.slice(0,4)):null,poster:m.poster_path?'https://image.tmdb.org/t/p/w500'+m.poster_path:null,overview:m.overview||''};
+if(!activeBoard.movies.includes(title))activeBoard.movies.push(title);
+if(!imgs[title])imgs[title]=activeBoard.movieRecords[title].poster||'';
+if(!yearMap[title])yearMap[title]=activeBoard.movieRecords[title].year||'';
+if(!genreMap[title])genreMap[title]='Movie';
+closeModal();renderBoard();
+}
+function shareBoard(){navigator.clipboard?.writeText(location.href+'#board-'+activeBoard.id);alert('Board link copied! In the real version, this will create a unique share link.')}
+document.getElementById('heroPosters').innerHTML=['La La Land','Spirited Away','Little Women'].map(m=>`<img src="${imgs[m]}" alt="${m}">`).join('');
+renderBoards();
+</script></body></html>
